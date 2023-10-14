@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chiffrement par Substitution</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="content">
+            <h1>Chiffrement par Substitution</h1>
+            <label for="message" class="la">Message:</label>
+            <input type="text" id="message">
+            <button onclick="chiffrer()">Chiffrer</button>
+            <button onclick="dechiffrer()">Déchiffrer</button>
+            <h2>Étapes de Chiffrement</h2>
+            <div id="etape" class="etapes"></div>
+            <h2>Étapes de Déchiffrement</h2>
+            <div id="etape" class="etapes"></div>
+            <div id="resultat" class="resultat"></div>
+        </div>
+        <div class="cryanalyse">
+            <h2>Cryptanalyse</h2>
+            <table id="table"></table>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

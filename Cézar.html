@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithme de César</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f2f2f2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #34495e;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            color: #ecf0f1;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        textarea, input {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        #resultat-container {
+            margin-top: 20px;
+            font-size: 18px;
+            opacity: 0; /* Initialisation de l'opacité à 0 */
+            transition: opacity 0.5s ease;
+        }
+
+        #resultat {
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Algorithme de César</h1>
+        <label for="message">Message :</label>
+        <textarea id="message" rows="4" placeholder="Saisissez votre message..."></textarea>
+        <label for="decalage">Rotation :</label>
+        <input type="number" id="decalage" min="1" value="1">
+        <button onclick="chiffrer()" id="chiffrerBtn">Chiffrer</button>
+        <button onclick="dechiffrer()">Déchiffrer</button>
+        <button onclick="attaquer()">Chercher dans le dictionnaire</button>
+        <button onclick="afficherToutesSolutions()">Toutes les solutions</button>
+        <h2 id="resultat-container">Résultat : <span id="resultat"></span></h2>
+    </div>
+    <script>
+        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+        const chiffrerBtn = document.getElementById("chiffrerBtn");
+
+        function chiffrementCesar(texte, n) {
+            let resultat = "";
+            for (let i = 0; i < texte.length; i++) {
+                let caractere = texte[i];
+                let lettreChiffree = shiftLetter(caractere, n);
+                resultat += lettreChiffree;
+            }
+            return resultat;
+        }
+
+        function dechiffrementCesar(texte, n) {
+            return chiffrementCesar(texte, -n);
+        }
+
+        function shiftLetter(letter, offset) {
+            if (!isLetterInAlphabet(letter)) {
+                return letter;
+            }
+
+            return numberToLetter(letterToNumber(letter) + offset);
+        }
+
+        function isLetterInAlphabet(letter) {
+            return alphabet.includes(letter.toUpperCase());
+        }
+
+        function letterToNumber(letter) {
+            if (!isLetterInAlphabet(letter)) {
+                return false;
+            }
+
+            return alphabet.indexOf(letter.toUpperCase()) + 1;
+        }
+
+        function numberToLetter(position) {
+            return getLetterByAlphabeticPosition(
+                moduloClamp(position, 1, alphabet.length)
+            );
+        }
+
+        function getLetterByAlphabeticPosition(position) {
+            if (position < 1 || position > alphabet.length) {
+                return false;
+            }
+
+            return alphabet[position - 1];
+        }
+
+        function moduloClamp(number, min, max) {
+            return positiveModulo(number - min, max + 1 - min) + min;
+        }
+
+        function positiveModulo(number, divisor) {
+            return ((number % divisor) + divisor) % divisor;
+        }
+
+        function chiffrer() {
+            let message = document.getElementById("message").value;
+            let decalage = parseInt(document.getElementById("decalage").value);
+            let resultat = chiffrementCesar(message, decalage);
+            document.getElementById("resultat").innerText = resultat;
+            fadeInResultat();
+            disableButton(chiffrerBtn, 3000);
+        }
+
+        function fadeInResultat() {
+            let resultatContainer = document.getElementById("resultat-container");
+            resultatContainer.style.opacity = 0;
+            document.getElementById("resultat").style.opacity = 0;
+            setTimeout(() => {
+                resultatContainer.style.opacity = 1;
+                document.getElementById("resultat").style.opacity = 1;
+            }, 100);
+        }
+
+        function disableButton(button, timeout) {
+            button.disabled = true;
+            setTimeout(() => {
+                button.disabled = false;
+            }, timeout);
+        }
+
+        function dechiffrer() {
+            let message = document.getElementById("message").value;
+            let decalage = parseInt(document.getElementById("decalage").value);
+            let resultat = dechiffrementCesar(message, decalage);
+            document.getElementById("resultat").innerText = resultat;
+            fadeInResultat();
+        }
+
+        async function attaquer() {
+            let messageChiffre = document.getElementById("message").value;
+            let urlDictionnaire = 'liste_francais.txt';
+
+            attaqueDictionnaire(messageChiffre, urlDictionnaire)
+                .then(resultat => {
+                    if (resultat === "Décryptage échoué") {
+                        document.getElementById("resultat").innerText = "Aucun mot trouvé dans le dictionnaire.";
+                    } else {
+                        document.getElementById("resultat").innerText = resultat;
+                    }
+                    fadeInResultat();
+                });
+        }
+
+        async function chargerDictionnaire(url) {
+            try {
+                const reponse = await fetch(url);
+                const contenu = await reponse.text();
+                return contenu.split('\n').map(mot => mot.trim().toUpperCase());
+            } catch (erreur) {
+                console.error('Erreur lors du chargement du dictionnaire :', erreur);
+                return [];
+            }
+        }
+
+        async function attaqueDictionnaire(messageChiffre, urlDictionnaire) {
+            try {
+                const dictionnaire = await chargerDictionnaire(urlDictionnaire);
+
+                for (let decalage = 1; decalage <= 25; decalage++) {
+                    let messageDechiffre = dechiffrementCesar(messageChiffre, decalage);
+                    if (estDansDictionnaire(messageDechiffre, dictionnaire)) {
+                        return messageDechiffre;
+                    }
+                }
+                return "Décryptage échoué";
+            } catch (erreur) {
+                console.error('Erreur lors de l\'attaque par dictionnaire :', erreur);
+                return "Erreur";
+            }
+        }
+
+        function estDansDictionnaire(mot, dictionnaire) {
+            return dictionnaire.includes(mot.toUpperCase());
+        }
+
+        function afficherToutesSolutions() {
+            let messageChiffre = document.getElementById("message").value;
+            let solutions = [];
+
+            for (let decalage = 1; decalage <= 26; decalage++) {
+                let messageDechiffre = dechiffrementCesar(messageChiffre, decalage);
+                solutions.push(`Décalage ${decalage}: ${messageDechiffre}`);
+            }
+
+            document.getElementById("resultat").innerHTML = solutions.join('<br>');
+            fadeInResultat();
+        }
+    </script>
+</body>
+</html>

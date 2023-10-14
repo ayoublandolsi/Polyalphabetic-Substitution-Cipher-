@@ -1,0 +1,84 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to right, rgb(238, 247, 249), rgb(236, 235, 252));
+
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    padding-left:20px;
+    padding-right: 20px;
+    
+}
+
+.cryanalyse {
+    padding: 20px;
+    border-radius: 10px;
+    width: 30%;
+}
+
+.content {
+    padding: 20px;
+    border-radius: 10px;
+    width: 65%;
+}
+
+
+
+input {
+
+    width: 80%;
+    height: 20px;
+    margin-bottom: 40px;
+    margin-top: 40px;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.la {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #1b1c1b;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+button:hover {
+    background-color: #000000;
+}
+
+.resultat {
+    margin-top: 30px;
+    font-size: 28px;
+}
+
+.etapes {
+    margin-top: 20px;
+    font-size: 18px;
+}
+
+table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 2px solid #222222;
+    padding: 2px;
+    text-align: center;
+}
+
+th {
+    background-color: #f2f2f2;
+}
